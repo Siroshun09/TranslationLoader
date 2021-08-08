@@ -1,7 +1,7 @@
 # TranslationLoader
 
-![Maven Central](https://img.shields.io/maven-central/v/com.github.siroshun09.TranslationLoader/TranslationLoader)
-![Maven Central](https://img.shields.io/nexus/s/com.github.siroshun09.TranslationLoader/TranslationLoader?label=snapshot&server=https%3A%2F%2Foss.sonatype.org)
+![Maven Central](https://img.shields.io/maven-central/v/com.github.siroshun09.translationloader/translationloader)
+![Maven Central](https://img.shields.io/nexus/s/com.github.siroshun09.translationloader/translationloader?label=snapshot&server=https%3A%2F%2Foss.sonatype.org)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Siroshun09/TranslationLoader/Java%20CI)
 ![GitHub](https://img.shields.io/github/license/Siroshun09/TranslationLoader)
 [![Javadoc](https://img.shields.io/badge/javadoc-page-orange)](https://siroshun09.github.io/TranslationLoader/)
