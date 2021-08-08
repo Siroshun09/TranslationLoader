@@ -1,0 +1,185 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">package com.github.siroshun09.translationloader;</a>
+<span class="sourceLineNo">002</span><a id="line.2"></a>
+<span class="sourceLineNo">003</span><a id="line.3">import com.github.siroshun09.configapi.api.file.FileConfiguration;</a>
+<span class="sourceLineNo">004</span><a id="line.4">import com.github.siroshun09.configapi.api.file.PropertiesConfiguration;</a>
+<span class="sourceLineNo">005</span><a id="line.5">import com.github.siroshun09.configapi.yaml.YamlConfiguration;</a>
+<span class="sourceLineNo">006</span><a id="line.6">import net.kyori.adventure.key.Key;</a>
+<span class="sourceLineNo">007</span><a id="line.7">import net.kyori.adventure.translation.TranslationRegistry;</a>
+<span class="sourceLineNo">008</span><a id="line.8">import org.jetbrains.annotations.Contract;</a>
+<span class="sourceLineNo">009</span><a id="line.9">import org.jetbrains.annotations.NotNull;</a>
+<span class="sourceLineNo">010</span><a id="line.10"></a>
+<span class="sourceLineNo">011</span><a id="line.11">import java.nio.file.Path;</a>
+<span class="sourceLineNo">012</span><a id="line.12">import java.util.Locale;</a>
+<span class="sourceLineNo">013</span><a id="line.13">import java.util.Objects;</a>
+<span class="sourceLineNo">014</span><a id="line.14">import java.util.function.Function;</a>
+<span class="sourceLineNo">015</span><a id="line.15"></a>
+<span class="sourceLineNo">016</span><a id="line.16">/**</a>
+<span class="sourceLineNo">017</span><a id="line.17"> * A builder of {@link TranslationLoader}.</a>
+<span class="sourceLineNo">018</span><a id="line.18"> */</a>
+<span class="sourceLineNo">019</span><a id="line.19">public final class TranslationLoaderBuilder {</a>
+<span class="sourceLineNo">020</span><a id="line.20"></a>
+<span class="sourceLineNo">021</span><a id="line.21">    private Path filePath;</a>
+<span class="sourceLineNo">022</span><a id="line.22">    private Locale locale;</a>
+<span class="sourceLineNo">023</span><a id="line.23">    private TranslationRegistry registry;</a>
+<span class="sourceLineNo">024</span><a id="line.24"></a>
+<span class="sourceLineNo">025</span><a id="line.25">    TranslationLoaderBuilder() {</a>
+<span class="sourceLineNo">026</span><a id="line.26">    }</a>
+<span class="sourceLineNo">027</span><a id="line.27"></a>
+<span class="sourceLineNo">028</span><a id="line.28">    /**</a>
+<span class="sourceLineNo">029</span><a id="line.29">     * Sets the filepath.</a>
+<span class="sourceLineNo">030</span><a id="line.30">     *</a>
+<span class="sourceLineNo">031</span><a id="line.31">     * @param filepath the filepath to load</a>
+<span class="sourceLineNo">032</span><a id="line.32">     * @return this builder</a>
+<span class="sourceLineNo">033</span><a id="line.33">     */</a>
+<span class="sourceLineNo">034</span><a id="line.34">    @Contract(value = "_ -&gt; this", mutates = "this")</a>
+<span class="sourceLineNo">035</span><a id="line.35">    public @NotNull TranslationLoaderBuilder setFilePath(Path filepath) {</a>
+<span class="sourceLineNo">036</span><a id="line.36">        this.filePath = filepath;</a>
+<span class="sourceLineNo">037</span><a id="line.37">        return this;</a>
+<span class="sourceLineNo">038</span><a id="line.38">    }</a>
+<span class="sourceLineNo">039</span><a id="line.39"></a>
+<span class="sourceLineNo">040</span><a id="line.40">    /**</a>
+<span class="sourceLineNo">041</span><a id="line.41">     * Sets the locale</a>
+<span class="sourceLineNo">042</span><a id="line.42">     *</a>
+<span class="sourceLineNo">043</span><a id="line.43">     * @param locale the locale</a>
+<span class="sourceLineNo">044</span><a id="line.44">     * @return this builder</a>
+<span class="sourceLineNo">045</span><a id="line.45">     */</a>
+<span class="sourceLineNo">046</span><a id="line.46">    @Contract(value = "_ -&gt; this", mutates = "this")</a>
+<span class="sourceLineNo">047</span><a id="line.47">    public @NotNull TranslationLoaderBuilder setLocale(Locale locale) {</a>
+<span class="sourceLineNo">048</span><a id="line.48">        this.locale = locale;</a>
+<span class="sourceLineNo">049</span><a id="line.49">        return this;</a>
+<span class="sourceLineNo">050</span><a id="line.50">    }</a>
+<span class="sourceLineNo">051</span><a id="line.51"></a>
+<span class="sourceLineNo">052</span><a id="line.52">    /**</a>
+<span class="sourceLineNo">053</span><a id="line.53">     * Sets the {@link TranslationRegistry}.</a>
+<span class="sourceLineNo">054</span><a id="line.54">     *</a>
+<span class="sourceLineNo">055</span><a id="line.55">     * @param registry the {@link TranslationRegistry}</a>
+<span class="sourceLineNo">056</span><a id="line.56">     * @return this builder</a>
+<span class="sourceLineNo">057</span><a id="line.57">     */</a>
+<span class="sourceLineNo">058</span><a id="line.58">    @Contract(value = "_ -&gt; this", mutates = "this")</a>
+<span class="sourceLineNo">059</span><a id="line.59">    public @NotNull TranslationLoaderBuilder setRegistry(TranslationRegistry registry) {</a>
+<span class="sourceLineNo">060</span><a id="line.60">        this.registry = registry;</a>
+<span class="sourceLineNo">061</span><a id="line.61">        return this;</a>
+<span class="sourceLineNo">062</span><a id="line.62">    }</a>
+<span class="sourceLineNo">063</span><a id="line.63"></a>
+<span class="sourceLineNo">064</span><a id="line.64">    /**</a>
+<span class="sourceLineNo">065</span><a id="line.65">     * Creates and sets the {@link TranslationRegistry}.</a>
+<span class="sourceLineNo">066</span><a id="line.66">     *</a>
+<span class="sourceLineNo">067</span><a id="line.67">     * @param key the {@link Key} of the registry</a>
+<span class="sourceLineNo">068</span><a id="line.68">     * @return this builder</a>
+<span class="sourceLineNo">069</span><a id="line.69">     */</a>
+<span class="sourceLineNo">070</span><a id="line.70">    @Contract(value = "_ -&gt; this", mutates = "this")</a>
+<span class="sourceLineNo">071</span><a id="line.71">    public @NotNull TranslationLoaderBuilder setRegistry(@NotNull Key key) {</a>
+<span class="sourceLineNo">072</span><a id="line.72">        this.registry = TranslationRegistry.create(key);</a>
+<span class="sourceLineNo">073</span><a id="line.73">        return this;</a>
+<span class="sourceLineNo">074</span><a id="line.74">    }</a>
+<span class="sourceLineNo">075</span><a id="line.75"></a>
+<span class="sourceLineNo">076</span><a id="line.76">    /**</a>
+<span class="sourceLineNo">077</span><a id="line.77">     * Creates new {@link FileConfigurationLoader}.</a>
+<span class="sourceLineNo">078</span><a id="line.78">     *</a>
+<span class="sourceLineNo">079</span><a id="line.79">     * @param func the {@link FileConfiguration} creator</a>
+<span class="sourceLineNo">080</span><a id="line.80">     * @return the new {@link FileConfigurationLoader}</a>
+<span class="sourceLineNo">081</span><a id="line.81">     */</a>
+<span class="sourceLineNo">082</span><a id="line.82">    @Contract("_ -&gt; new")</a>
+<span class="sourceLineNo">083</span><a id="line.83">    public @NotNull FileConfigurationLoader createFileConfigurationLoader(@NotNull Function&lt;Path, FileConfiguration&gt; func) {</a>
+<span class="sourceLineNo">084</span><a id="line.84">        Objects.requireNonNull(filePath);</a>
+<span class="sourceLineNo">085</span><a id="line.85">        Objects.requireNonNull(locale);</a>
+<span class="sourceLineNo">086</span><a id="line.86">        Objects.requireNonNull(registry);</a>
+<span class="sourceLineNo">087</span><a id="line.87"></a>
+<span class="sourceLineNo">088</span><a id="line.88">        var config = Objects.requireNonNull(func).apply(filePath);</a>
+<span class="sourceLineNo">089</span><a id="line.89">        return new FileConfigurationLoader(config, locale, registry);</a>
+<span class="sourceLineNo">090</span><a id="line.90">    }</a>
+<span class="sourceLineNo">091</span><a id="line.91"></a>
+<span class="sourceLineNo">092</span><a id="line.92">    /**</a>
+<span class="sourceLineNo">093</span><a id="line.93">     * Creates new {@link FileConfigurationLoader} that loads from yaml file.</a>
+<span class="sourceLineNo">094</span><a id="line.94">     *</a>
+<span class="sourceLineNo">095</span><a id="line.95">     * @return new {@link FileConfigurationLoader} that loads from yaml file</a>
+<span class="sourceLineNo">096</span><a id="line.96">     */</a>
+<span class="sourceLineNo">097</span><a id="line.97">    @Contract(" -&gt; new")</a>
+<span class="sourceLineNo">098</span><a id="line.98">    public @NotNull FileConfigurationLoader createYamlConfigurationLoader() {</a>
+<span class="sourceLineNo">099</span><a id="line.99">        return createFileConfigurationLoader(YamlConfiguration::create);</a>
+<span class="sourceLineNo">100</span><a id="line.100">    }</a>
+<span class="sourceLineNo">101</span><a id="line.101"></a>
+<span class="sourceLineNo">102</span><a id="line.102">    /**</a>
+<span class="sourceLineNo">103</span><a id="line.103">     * Creates new {@link FileConfigurationLoader} that loads from properties file.</a>
+<span class="sourceLineNo">104</span><a id="line.104">     *</a>
+<span class="sourceLineNo">105</span><a id="line.105">     * @return new {@link FileConfigurationLoader} that loads from properties file</a>
+<span class="sourceLineNo">106</span><a id="line.106">     */</a>
+<span class="sourceLineNo">107</span><a id="line.107">    @Contract(" -&gt; new")</a>
+<span class="sourceLineNo">108</span><a id="line.108">    public @NotNull FileConfigurationLoader createPropertiesConfigurationLoader() {</a>
+<span class="sourceLineNo">109</span><a id="line.109">        return createFileConfigurationLoader(PropertiesConfiguration::create);</a>
+<span class="sourceLineNo">110</span><a id="line.110">    }</a>
+<span class="sourceLineNo">111</span><a id="line.111">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>
