@@ -75,7 +75,7 @@
         <dependency>
             <groupId>com.github.siroshun09.configapi</groupId>
             <artifactId>configapi</artifactId>
-            <version>4.3.0</version>
+            <version>4.4.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
