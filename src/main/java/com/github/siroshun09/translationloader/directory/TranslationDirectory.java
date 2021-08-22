@@ -7,6 +7,7 @@ import com.github.siroshun09.translationloader.util.PathConsumer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -51,6 +52,31 @@ public class TranslationDirectory {
      */
     public TranslationDirectory(@NotNull Path directory, @NotNull Key key) {
         this(directory, () -> TranslationRegistry.create(key));
+    }
+
+    /**
+     * Creates a new {@link TranslationDirectory}.
+     *
+     * @param directory        the directory to load
+     * @param registrySupplier the supplier to create {@link TranslationRegistry}
+     * @return new {@link TranslationDirectory}
+     */
+    @Contract("_, _ -> new")
+    public static @NotNull TranslationDirectory create(@NotNull Path directory,
+                                                       @NotNull Supplier<TranslationRegistry> registrySupplier) {
+        return new TranslationDirectory(directory, registrySupplier);
+    }
+
+    /**
+     * Creates a new {@link TranslationDirectory}.
+     *
+     * @param directory the directory to load
+     * @param key       the key of {@link TranslationRegistry}
+     * @return new {@link TranslationDirectory}
+     */
+    @Contract("_, _ -> new")
+    public static @NotNull TranslationDirectory create(@NotNull Path directory, @NotNull Key key) {
+        return create(directory, () -> TranslationRegistry.create(key));
     }
 
     /**
