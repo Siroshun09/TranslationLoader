@@ -16,7 +16,7 @@ A library for importing messages from files into [Adventure](https://github.com/
 <dependency>
     <groupId>com.github.siroshun09.translationloader</groupId>
     <artifactId>translationloader</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -29,7 +29,7 @@ If needed, you should add those dependencies.
 
 ```
     dependencies {
-        compile 'com.github.siroshun09.translationloader:translationloader:1.0.0'
+        compile 'com.github.siroshun09.translationloader:translationloader:1.1.0-SNAPSHOT'
     }
 ```
 
