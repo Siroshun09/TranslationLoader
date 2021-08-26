@@ -6,7 +6,9 @@ import net.kyori.adventure.translation.TranslationRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * An implementation of {@link TranslationLoader} that loads messages from {@link FileConfiguration}.
@@ -52,9 +54,19 @@ public class FileConfigurationLoader extends AbstractTranslationLoader {
             }
 
             var object = config.get(key);
+            var currentKey = keyPrefix + key;
+
+            if (object instanceof List) {
+                var message =
+                        ((List<?>) object).stream()
+                                .map(element -> element instanceof String ? (String) element : element.toString())
+                                .collect(Collectors.joining("\\n"));
+
+                getModifiableMessageMap().put(currentKey, message);
+                continue;
+            }
 
             if (object != null) {
-                var currentKey = keyPrefix + key;
                 var message = object instanceof String ? (String) object : object.toString();
 
                 getModifiableMessageMap().put(currentKey, message);
