@@ -83,6 +83,12 @@ public class TranslationDirectory {
         return create(directory, () -> TranslationRegistry.create(key));
     }
 
+    public void createDirectoryIfNotExists() throws IOException {
+        if (!Files.isDirectory(directory)) {
+            Files.createDirectories(directory);
+        }
+    }
+
     /**
      * Creates the directory if not exists.
      * <p>
