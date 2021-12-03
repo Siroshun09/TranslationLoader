@@ -25,19 +25,6 @@ import java.util.function.Supplier;
  */
 public class TranslationDirectory {
 
-    private final Path directory;
-    private final Supplier<TranslationRegistry> registrySupplier;
-
-    private final Set<TranslationLoader> loadedLoaders = new HashSet<>();
-    private TranslationRegistry registry;
-
-    private TranslationDirectory(@NotNull Path directory,
-                                @NotNull Supplier<TranslationRegistry> registrySupplier) {
-        this.directory = directory;
-        this.registrySupplier = registrySupplier;
-        this.registry = registrySupplier.get();
-    }
-
     /**
      * Creates a new {@link TranslationDirectory}.
      *
@@ -61,6 +48,19 @@ public class TranslationDirectory {
     @Contract("_, _ -> new")
     public static @NotNull TranslationDirectory create(@NotNull Path directory, @NotNull Key key) {
         return create(directory, () -> TranslationRegistry.create(key));
+    }
+
+    private final Path directory;
+    private final Supplier<TranslationRegistry> registrySupplier;
+
+    private final Set<TranslationLoader> loadedLoaders = new HashSet<>();
+    private TranslationRegistry registry;
+
+    private TranslationDirectory(@NotNull Path directory,
+                                @NotNull Supplier<TranslationRegistry> registrySupplier) {
+        this.directory = directory;
+        this.registrySupplier = registrySupplier;
+        this.registry = registrySupplier.get();
     }
 
     /**
