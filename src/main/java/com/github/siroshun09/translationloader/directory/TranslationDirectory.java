@@ -31,31 +31,11 @@ public class TranslationDirectory {
     private final Set<TranslationLoader> loadedLoaders = new HashSet<>();
     private TranslationRegistry registry;
 
-    /**
-     * The constructor of {@link TranslationDirectory}.
-     *
-     * @param directory        the directory to load
-     * @param registrySupplier the supplier to create {@link TranslationRegistry}
-     * @deprecated Use {@link #create(Path, Supplier)}
-     */
-    @Deprecated(since = "1.1.0", forRemoval = true)
-    public TranslationDirectory(@NotNull Path directory,
+    private TranslationDirectory(@NotNull Path directory,
                                 @NotNull Supplier<TranslationRegistry> registrySupplier) {
         this.directory = directory;
         this.registrySupplier = registrySupplier;
         this.registry = registrySupplier.get();
-    }
-
-    /**
-     * The constructor of {@link TranslationDirectory}.
-     *
-     * @param directory the directory to load
-     * @param key       the key of {@link TranslationRegistry}
-     * @deprecated Use {@link #create(Path, Key)}
-     */
-    @Deprecated(since = "1.1.0", forRemoval = true)
-    public TranslationDirectory(@NotNull Path directory, @NotNull Key key) {
-        this(directory, () -> TranslationRegistry.create(key));
     }
 
     /**
