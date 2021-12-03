@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"com.github.siroshun09.translationloader"},{"l":"com.github.siroshun09.translationloader.directory"},{"l":"com.github.siroshun09.translationloader.util"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"com.github.siroshun09.translationloader"},{"l":"com.github.siroshun09.translationloader.argument"},{"l":"com.github.siroshun09.translationloader.directory"},{"l":"com.github.siroshun09.translationloader.util"}]
