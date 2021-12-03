@@ -9,27 +9,36 @@ A library for importing messages from files into [Adventure](https://github.com/
 
 ## Usage
 
-#### For Maven:
+This library depends on [Adventure](https://github.com/KyoriPowered/Adventure)
+and [ConfigAPI](https://github.com/Siroshun09/ConfigAPI) as `provided` (`compileOnly`).
+
+If needed, you should add those dependencies.
+
+### Maven
 
 ```xml
 <dependency>
     <groupId>com.github.siroshun09.translationloader</groupId>
     <artifactId>translationloader</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2.0</version>
+    <scope>compile</scope>
 </dependency>
 ```
 
-This library refers to [Adventure](https://github.com/KyoriPowered/Adventure)
-and [ConfigAPI](https://github.com/Siroshun09/ConfigAPI) as `provided`.
+### Gradle (Groovy)
 
-If needed, you should add those dependencies.
-
-#### For Gradle:
-
+```groovy
+dependencies {
+    implementation 'com.github.siroshun09.translationloader:translationloader:1.2.0'
+}
 ```
-    dependencies {
-        compile 'com.github.siroshun09.translationloader:translationloader:1.1.1-SNAPSHOT'
-    }
+
+### Gradle (Kotlin)
+
+```kotlin
+dependencies {
+    implementation("com.github.siroshun09.translationloader:translationloader:1.2.0")
+}
 ```
 
 ## Documentations
