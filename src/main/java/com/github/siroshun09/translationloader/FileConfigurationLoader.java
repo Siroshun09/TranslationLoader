@@ -20,12 +20,12 @@ public class FileConfigurationLoader extends AbstractTranslationLoader {
     /**
      * The constructor of {@link FileConfigurationLoader}.
      *
-     * @param config the {@link FileConfiguration} to import messages
+     * @param config   the {@link FileConfiguration} to import messages
      * @param locale   the locale of messages that this loader will load
      * @param registry the {@link TranslationRegistry} to register messages
      */
     FileConfigurationLoader(@NotNull FileConfiguration config, @NotNull Locale locale,
-                                      @NotNull TranslationRegistry registry) {
+                            @NotNull TranslationRegistry registry) {
         super(config.getPath(), locale, registry);
         this.config = config;
     }

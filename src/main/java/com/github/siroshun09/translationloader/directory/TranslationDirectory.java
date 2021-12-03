@@ -57,7 +57,7 @@ public class TranslationDirectory {
     private TranslationRegistry registry;
 
     private TranslationDirectory(@NotNull Path directory,
-                                @NotNull Supplier<TranslationRegistry> registrySupplier) {
+                                 @NotNull Supplier<TranslationRegistry> registrySupplier) {
         this.directory = directory;
         this.registrySupplier = registrySupplier;
         this.registry = registrySupplier.get();
