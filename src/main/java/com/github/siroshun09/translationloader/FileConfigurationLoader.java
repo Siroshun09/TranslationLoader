@@ -1,76 +1,57 @@
 package com.github.siroshun09.translationloader;
 
-import com.github.siroshun09.configapi.api.Configuration;
 import com.github.siroshun09.configapi.api.file.FileConfiguration;
-import net.kyori.adventure.translation.TranslationRegistry;
+import com.github.siroshun09.translationloader.util.LocaleParser;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
-/**
- * An implementation of {@link TranslationLoader} that loads messages from {@link FileConfiguration}.
- */
-public class FileConfigurationLoader extends AbstractTranslationLoader {
+public class FileConfigurationLoader extends ConfigurationLoader {
 
-    private final FileConfiguration config;
+    @Contract("_ -> new")
+    public static @NotNull FileConfigurationLoader create(@NotNull FileConfiguration source) {
+        var locale = LocaleParser.fromFileName(source.getPath());
 
-    /**
-     * The constructor of {@link FileConfigurationLoader}.
-     *
-     * @param config   the {@link FileConfiguration} to import messages
-     * @param locale   the locale of messages that this loader will load
-     * @param registry the {@link TranslationRegistry} to register messages
-     */
-    FileConfigurationLoader(@NotNull FileConfiguration config, @NotNull Locale locale,
-                            @NotNull TranslationRegistry registry) {
-        super(config.getPath(), locale, registry);
-        this.config = config;
+        if (locale != null) {
+            return create(locale, source);
+        } else {
+            throw new IllegalStateException("Could not get the locale");
+        }
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull FileConfigurationLoader create(@NotNull Locale locale, @NotNull FileConfiguration source) {
+        return new FileConfigurationLoader(locale, source);
+    }
+
+    private final FileConfiguration source;
+
+    private FileConfigurationLoader(@NotNull Locale locale, @NotNull FileConfiguration source) {
+        super(locale, source);
+        this.source = source;
     }
 
     @Override
     public void load() throws IOException {
         setLoaded(false);
 
-        getModifiableMessageMap().clear();
-
-        config.load();
-
-        importMessagesFromConfiguration(config, "");
-
-        setLoaded(true);
+        try (source) {
+            source.load();
+            super.load();
+        }
     }
 
-    private void importMessagesFromConfiguration(@NotNull Configuration config, @NotNull String keyPrefix) {
-        for (var key : config.getKeyList()) {
-            var section = config.getSection(key);
+    @Override
+    public void save() throws IOException {
+        if (!isModified()) {
+            return;
+        }
 
-            if (section != null) {
-                var newKeyPrefix = keyPrefix + key + Configuration.PATH_SEPARATOR;
-                importMessagesFromConfiguration(section, newKeyPrefix);
-                continue;
-            }
-
-            var object = config.get(key);
-            var currentKey = keyPrefix + key;
-
-            if (object instanceof List) {
-                var message =
-                        ((List<?>) object).stream()
-                                .map(element -> element instanceof String ? (String) element : element.toString())
-                                .collect(Collectors.joining("\\n"));
-
-                getModifiableMessageMap().put(currentKey, message);
-                continue;
-            }
-
-            if (object != null) {
-                var message = object instanceof String ? (String) object : object.toString();
-
-                getModifiableMessageMap().put(currentKey, message);
-            }
+        try (source) {
+            super.save();
+            source.save();
         }
     }
 }
