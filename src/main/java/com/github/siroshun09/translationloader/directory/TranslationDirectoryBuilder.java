@@ -1,6 +1,5 @@
 package com.github.siroshun09.translationloader.directory;
 
-import com.github.siroshun09.translationloader.merger.MessageMerger;
 import com.github.siroshun09.translationloader.util.PathConsumer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.TranslationRegistry;
@@ -25,7 +24,7 @@ public final class TranslationDirectoryBuilder {
 
     private PathConsumer onDirectoryCreated;
     private String version;
-    private MessageMerger messageMerger;
+    private TranslationLoaderCreator translationLoaderCreator;
 
 
     TranslationDirectoryBuilder() {
@@ -95,7 +94,7 @@ public final class TranslationDirectoryBuilder {
      * Sets the translation version.
      * <p>
      * If this version differs from the version of the loaded {@link com.github.siroshun09.translationloader.TranslationLoader},
-     * add the missing messages using {@link MessageMerger}.
+     * add the missing messages using {@link TranslationLoaderCreator}.
      *
      * @param version the translation version
      * @return this builder
@@ -107,14 +106,14 @@ public final class TranslationDirectoryBuilder {
     }
 
     /**
-     * Sets the {@link MessageMerger} to add the missing messages.
+     * Sets the {@link TranslationLoaderCreator} to add the missing messages.
      *
-     * @param messageMerger the {@link MessageMerger} to add the missing messages
+     * @param translationLoaderCreator the {@link TranslationLoaderCreator} to add the missing messages
      * @return this builder
      */
     @Contract("_ -> this")
-    public @NotNull TranslationDirectoryBuilder setMessageMerger(@NotNull MessageMerger messageMerger) {
-        this.messageMerger = messageMerger;
+    public @NotNull TranslationDirectoryBuilder setTranslationLoaderCreator(@NotNull TranslationLoaderCreator translationLoaderCreator) {
+        this.translationLoaderCreator = translationLoaderCreator;
         return this;
     }
 
@@ -140,6 +139,6 @@ public final class TranslationDirectoryBuilder {
         }
 
         Objects.requireNonNull(registrySupplier);
-        return new TranslationDirectory(directory, registrySupplier, onDirectoryCreated, version, messageMerger);
+        return new TranslationDirectory(directory, registrySupplier, onDirectoryCreated, version, translationLoaderCreator);
     }
 }

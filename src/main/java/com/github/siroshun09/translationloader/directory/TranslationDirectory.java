@@ -4,7 +4,6 @@ import com.github.siroshun09.configapi.api.file.PropertiesConfiguration;
 import com.github.siroshun09.configapi.yaml.YamlConfiguration;
 import com.github.siroshun09.translationloader.FileConfigurationLoader;
 import com.github.siroshun09.translationloader.TranslationLoader;
-import com.github.siroshun09.translationloader.merger.MessageMerger;
 import com.github.siroshun09.translationloader.util.ExtensionUtil;
 import com.github.siroshun09.translationloader.util.LocaleParser;
 import com.github.siroshun09.translationloader.util.PathConsumer;
@@ -68,7 +67,7 @@ public class TranslationDirectory {
     private final Supplier<TranslationRegistry> registrySupplier;
     private final @Nullable PathConsumer onDirectoryCreated;
     private final @Nullable String version;
-    private final @Nullable MessageMerger messageMerger;
+    private final @Nullable TranslationLoaderCreator translationLoaderCreator;
 
     private final Set<Locale> loadedLocales = new HashSet<>();
 
@@ -76,12 +75,12 @@ public class TranslationDirectory {
 
     TranslationDirectory(@NotNull Path directory, @NotNull Supplier<TranslationRegistry> registrySupplier,
                          @Nullable PathConsumer onDirectoryCreated,
-                         @Nullable String version, @Nullable MessageMerger messageMerger) {
+                         @Nullable String version, @Nullable TranslationLoaderCreator translationLoaderCreator) {
         this.directory = directory;
         this.registrySupplier = registrySupplier;
         this.onDirectoryCreated = onDirectoryCreated;
         this.version = version;
-        this.messageMerger = messageMerger;
+        this.translationLoaderCreator = translationLoaderCreator;
     }
 
     /**
@@ -89,7 +88,7 @@ public class TranslationDirectory {
      * <p>
      * If the directory does not exist, this method will create it.
      * <p>
-     * This method may also use {@link MessageMerger} to add messages and save them to a file.
+     * This method may also use {@link TranslationLoaderCreator} to add messages and save them to a file.
      *
      * @throws IOException if I/O error occurred
      */
@@ -194,12 +193,12 @@ public class TranslationDirectory {
     }
 
     private void updateAndRegister(@NotNull TranslationLoader loader) {
-        if (messageMerger != null &&
+        if (translationLoaderCreator != null &&
                 version != null && !version.isEmpty() && !loader.getVersion().equals(version)) {
             TranslationLoader other;
 
             try {
-                other = messageMerger.createLoader(loader.getLocale());
+                other = translationLoaderCreator.createLoader(loader.getLocale());
             } catch (IOException e) {
                 throw new RuntimeException("Could not get the merger (" + loader.getLocale() + ")", e);
             }

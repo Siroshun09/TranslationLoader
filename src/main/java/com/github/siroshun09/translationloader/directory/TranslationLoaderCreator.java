@@ -1,4 +1,4 @@
-package com.github.siroshun09.translationloader.merger;
+package com.github.siroshun09.translationloader.directory;
 
 import com.github.siroshun09.translationloader.TranslationLoader;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +11,7 @@ import java.util.Locale;
  * An interface to merge missing messages to translations.
  */
 @FunctionalInterface
-public interface MessageMerger {
+public interface TranslationLoaderCreator {
 
     /**
      * Creates {@link TranslationLoader} of the {@link Locale}.
