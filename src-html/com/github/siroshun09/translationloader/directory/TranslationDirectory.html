@@ -9,201 +9,225 @@
 <div class="sourceContainer">
 <pre><span class="sourceLineNo">001</span><a id="line.1">package com.github.siroshun09.translationloader.directory;</a>
 <span class="sourceLineNo">002</span><a id="line.2"></a>
-<span class="sourceLineNo">003</span><a id="line.3">import com.github.siroshun09.translationloader.TranslationLoader;</a>
-<span class="sourceLineNo">004</span><a id="line.4">import com.github.siroshun09.translationloader.util.ExtensionUtil;</a>
-<span class="sourceLineNo">005</span><a id="line.5">import com.github.siroshun09.translationloader.util.LocaleParser;</a>
-<span class="sourceLineNo">006</span><a id="line.6">import com.github.siroshun09.translationloader.util.PathConsumer;</a>
-<span class="sourceLineNo">007</span><a id="line.7">import net.kyori.adventure.key.Key;</a>
-<span class="sourceLineNo">008</span><a id="line.8">import net.kyori.adventure.translation.GlobalTranslator;</a>
-<span class="sourceLineNo">009</span><a id="line.9">import net.kyori.adventure.translation.TranslationRegistry;</a>
-<span class="sourceLineNo">010</span><a id="line.10">import org.jetbrains.annotations.Contract;</a>
-<span class="sourceLineNo">011</span><a id="line.11">import org.jetbrains.annotations.NotNull;</a>
-<span class="sourceLineNo">012</span><a id="line.12">import org.jetbrains.annotations.Nullable;</a>
-<span class="sourceLineNo">013</span><a id="line.13">import org.jetbrains.annotations.Unmodifiable;</a>
-<span class="sourceLineNo">014</span><a id="line.14"></a>
-<span class="sourceLineNo">015</span><a id="line.15">import java.io.IOException;</a>
-<span class="sourceLineNo">016</span><a id="line.16">import java.nio.file.Files;</a>
-<span class="sourceLineNo">017</span><a id="line.17">import java.nio.file.Path;</a>
-<span class="sourceLineNo">018</span><a id="line.18">import java.util.HashSet;</a>
-<span class="sourceLineNo">019</span><a id="line.19">import java.util.Objects;</a>
-<span class="sourceLineNo">020</span><a id="line.20">import java.util.Set;</a>
-<span class="sourceLineNo">021</span><a id="line.21">import java.util.function.Supplier;</a>
-<span class="sourceLineNo">022</span><a id="line.22"></a>
-<span class="sourceLineNo">023</span><a id="line.23">/**</a>
-<span class="sourceLineNo">024</span><a id="line.24"> * A class that loads messages from files in a directory.</a>
-<span class="sourceLineNo">025</span><a id="line.25"> */</a>
-<span class="sourceLineNo">026</span><a id="line.26">public class TranslationDirectory {</a>
-<span class="sourceLineNo">027</span><a id="line.27"></a>
-<span class="sourceLineNo">028</span><a id="line.28">    /**</a>
-<span class="sourceLineNo">029</span><a id="line.29">     * Creates a new {@link TranslationDirectory}.</a>
-<span class="sourceLineNo">030</span><a id="line.30">     *</a>
-<span class="sourceLineNo">031</span><a id="line.31">     * @param directory        the directory to load</a>
-<span class="sourceLineNo">032</span><a id="line.32">     * @param registrySupplier the supplier to create {@link TranslationRegistry}</a>
-<span class="sourceLineNo">033</span><a id="line.33">     * @return new {@link TranslationDirectory}</a>
-<span class="sourceLineNo">034</span><a id="line.34">     */</a>
-<span class="sourceLineNo">035</span><a id="line.35">    @Contract("_, _ -&gt; new")</a>
-<span class="sourceLineNo">036</span><a id="line.36">    public static @NotNull TranslationDirectory create(@NotNull Path directory,</a>
-<span class="sourceLineNo">037</span><a id="line.37">                                                       @NotNull Supplier&lt;TranslationRegistry&gt; registrySupplier) {</a>
-<span class="sourceLineNo">038</span><a id="line.38">        return new TranslationDirectory(directory, registrySupplier);</a>
-<span class="sourceLineNo">039</span><a id="line.39">    }</a>
-<span class="sourceLineNo">040</span><a id="line.40"></a>
-<span class="sourceLineNo">041</span><a id="line.41">    /**</a>
-<span class="sourceLineNo">042</span><a id="line.42">     * Creates a new {@link TranslationDirectory}.</a>
-<span class="sourceLineNo">043</span><a id="line.43">     *</a>
-<span class="sourceLineNo">044</span><a id="line.44">     * @param directory the directory to load</a>
-<span class="sourceLineNo">045</span><a id="line.45">     * @param key       the key of {@link TranslationRegistry}</a>
-<span class="sourceLineNo">046</span><a id="line.46">     * @return new {@link TranslationDirectory}</a>
-<span class="sourceLineNo">047</span><a id="line.47">     */</a>
-<span class="sourceLineNo">048</span><a id="line.48">    @Contract("_, _ -&gt; new")</a>
-<span class="sourceLineNo">049</span><a id="line.49">    public static @NotNull TranslationDirectory create(@NotNull Path directory, @NotNull Key key) {</a>
-<span class="sourceLineNo">050</span><a id="line.50">        return create(directory, () -&gt; TranslationRegistry.create(key));</a>
-<span class="sourceLineNo">051</span><a id="line.51">    }</a>
-<span class="sourceLineNo">052</span><a id="line.52"></a>
-<span class="sourceLineNo">053</span><a id="line.53">    private final Path directory;</a>
-<span class="sourceLineNo">054</span><a id="line.54">    private final Supplier&lt;TranslationRegistry&gt; registrySupplier;</a>
+<span class="sourceLineNo">003</span><a id="line.3">import com.github.siroshun09.configapi.api.file.PropertiesConfiguration;</a>
+<span class="sourceLineNo">004</span><a id="line.4">import com.github.siroshun09.configapi.yaml.YamlConfiguration;</a>
+<span class="sourceLineNo">005</span><a id="line.5">import com.github.siroshun09.translationloader.FileConfigurationLoader;</a>
+<span class="sourceLineNo">006</span><a id="line.6">import com.github.siroshun09.translationloader.TranslationLoader;</a>
+<span class="sourceLineNo">007</span><a id="line.7">import com.github.siroshun09.translationloader.util.ExtensionUtil;</a>
+<span class="sourceLineNo">008</span><a id="line.8">import com.github.siroshun09.translationloader.util.LocaleParser;</a>
+<span class="sourceLineNo">009</span><a id="line.9">import com.github.siroshun09.translationloader.util.PathConsumer;</a>
+<span class="sourceLineNo">010</span><a id="line.10">import net.kyori.adventure.key.Key;</a>
+<span class="sourceLineNo">011</span><a id="line.11">import net.kyori.adventure.translation.GlobalTranslator;</a>
+<span class="sourceLineNo">012</span><a id="line.12">import net.kyori.adventure.translation.TranslationRegistry;</a>
+<span class="sourceLineNo">013</span><a id="line.13">import org.jetbrains.annotations.Contract;</a>
+<span class="sourceLineNo">014</span><a id="line.14">import org.jetbrains.annotations.NotNull;</a>
+<span class="sourceLineNo">015</span><a id="line.15">import org.jetbrains.annotations.Nullable;</a>
+<span class="sourceLineNo">016</span><a id="line.16"></a>
+<span class="sourceLineNo">017</span><a id="line.17">import java.io.IOException;</a>
+<span class="sourceLineNo">018</span><a id="line.18">import java.nio.file.Files;</a>
+<span class="sourceLineNo">019</span><a id="line.19">import java.nio.file.Path;</a>
+<span class="sourceLineNo">020</span><a id="line.20">import java.util.HashSet;</a>
+<span class="sourceLineNo">021</span><a id="line.21">import java.util.Locale;</a>
+<span class="sourceLineNo">022</span><a id="line.22">import java.util.Objects;</a>
+<span class="sourceLineNo">023</span><a id="line.23">import java.util.Set;</a>
+<span class="sourceLineNo">024</span><a id="line.24">import java.util.function.Supplier;</a>
+<span class="sourceLineNo">025</span><a id="line.25"></a>
+<span class="sourceLineNo">026</span><a id="line.26">/**</a>
+<span class="sourceLineNo">027</span><a id="line.27"> * A class that loads messages from files in a directory.</a>
+<span class="sourceLineNo">028</span><a id="line.28"> */</a>
+<span class="sourceLineNo">029</span><a id="line.29">public class TranslationDirectory {</a>
+<span class="sourceLineNo">030</span><a id="line.30"></a>
+<span class="sourceLineNo">031</span><a id="line.31">    /**</a>
+<span class="sourceLineNo">032</span><a id="line.32">     * Creates a new {@link TranslationDirectory}.</a>
+<span class="sourceLineNo">033</span><a id="line.33">     *</a>
+<span class="sourceLineNo">034</span><a id="line.34">     * @param directory        the directory to load</a>
+<span class="sourceLineNo">035</span><a id="line.35">     * @param registrySupplier the supplier to create {@link TranslationRegistry}</a>
+<span class="sourceLineNo">036</span><a id="line.36">     * @return new {@link TranslationDirectory}</a>
+<span class="sourceLineNo">037</span><a id="line.37">     */</a>
+<span class="sourceLineNo">038</span><a id="line.38">    @Contract("_, _ -&gt; new")</a>
+<span class="sourceLineNo">039</span><a id="line.39">    public static @NotNull TranslationDirectory create(@NotNull Path directory,</a>
+<span class="sourceLineNo">040</span><a id="line.40">                                                       @NotNull Supplier&lt;TranslationRegistry&gt; registrySupplier) {</a>
+<span class="sourceLineNo">041</span><a id="line.41">        return new TranslationDirectory(directory, registrySupplier, null, null, null);</a>
+<span class="sourceLineNo">042</span><a id="line.42">    }</a>
+<span class="sourceLineNo">043</span><a id="line.43"></a>
+<span class="sourceLineNo">044</span><a id="line.44">    /**</a>
+<span class="sourceLineNo">045</span><a id="line.45">     * Creates a new {@link TranslationDirectory}.</a>
+<span class="sourceLineNo">046</span><a id="line.46">     *</a>
+<span class="sourceLineNo">047</span><a id="line.47">     * @param directory the directory to load</a>
+<span class="sourceLineNo">048</span><a id="line.48">     * @param key       the key of {@link TranslationRegistry}</a>
+<span class="sourceLineNo">049</span><a id="line.49">     * @return new {@link TranslationDirectory}</a>
+<span class="sourceLineNo">050</span><a id="line.50">     */</a>
+<span class="sourceLineNo">051</span><a id="line.51">    @Contract("_, _ -&gt; new")</a>
+<span class="sourceLineNo">052</span><a id="line.52">    public static @NotNull TranslationDirectory create(@NotNull Path directory, @NotNull Key key) {</a>
+<span class="sourceLineNo">053</span><a id="line.53">        return create(directory, () -&gt; TranslationRegistry.create(key));</a>
+<span class="sourceLineNo">054</span><a id="line.54">    }</a>
 <span class="sourceLineNo">055</span><a id="line.55"></a>
-<span class="sourceLineNo">056</span><a id="line.56">    private final Set&lt;TranslationLoader&gt; loadedLoaders = new HashSet&lt;&gt;();</a>
-<span class="sourceLineNo">057</span><a id="line.57">    private TranslationRegistry registry;</a>
-<span class="sourceLineNo">058</span><a id="line.58"></a>
-<span class="sourceLineNo">059</span><a id="line.59">    private TranslationDirectory(@NotNull Path directory,</a>
-<span class="sourceLineNo">060</span><a id="line.60">                                 @NotNull Supplier&lt;TranslationRegistry&gt; registrySupplier) {</a>
-<span class="sourceLineNo">061</span><a id="line.61">        this.directory = directory;</a>
-<span class="sourceLineNo">062</span><a id="line.62">        this.registrySupplier = registrySupplier;</a>
-<span class="sourceLineNo">063</span><a id="line.63">        this.registry = registrySupplier.get();</a>
+<span class="sourceLineNo">056</span><a id="line.56">    /**</a>
+<span class="sourceLineNo">057</span><a id="line.57">     * Creates a new {@link TranslationDirectoryBuilder}.</a>
+<span class="sourceLineNo">058</span><a id="line.58">     *</a>
+<span class="sourceLineNo">059</span><a id="line.59">     * @return new {@link TranslationDirectoryBuilder}</a>
+<span class="sourceLineNo">060</span><a id="line.60">     */</a>
+<span class="sourceLineNo">061</span><a id="line.61">    @Contract(value = " -&gt; new", pure = true)</a>
+<span class="sourceLineNo">062</span><a id="line.62">    public static @NotNull TranslationDirectoryBuilder newBuilder() {</a>
+<span class="sourceLineNo">063</span><a id="line.63">        return new TranslationDirectoryBuilder();</a>
 <span class="sourceLineNo">064</span><a id="line.64">    }</a>
 <span class="sourceLineNo">065</span><a id="line.65"></a>
-<span class="sourceLineNo">066</span><a id="line.66">    /**</a>
-<span class="sourceLineNo">067</span><a id="line.67">     * Creates the directory if not exists.</a>
-<span class="sourceLineNo">068</span><a id="line.68">     *</a>
-<span class="sourceLineNo">069</span><a id="line.69">     * @throws IOException if I/O error occurred</a>
-<span class="sourceLineNo">070</span><a id="line.70">     */</a>
-<span class="sourceLineNo">071</span><a id="line.71">    public void createDirectoryIfNotExists() throws IOException {</a>
-<span class="sourceLineNo">072</span><a id="line.72">        if (!Files.isDirectory(directory)) {</a>
-<span class="sourceLineNo">073</span><a id="line.73">            Files.createDirectories(directory);</a>
-<span class="sourceLineNo">074</span><a id="line.74">        }</a>
-<span class="sourceLineNo">075</span><a id="line.75">    }</a>
-<span class="sourceLineNo">076</span><a id="line.76"></a>
-<span class="sourceLineNo">077</span><a id="line.77">    /**</a>
-<span class="sourceLineNo">078</span><a id="line.78">     * Creates the directory if not exists.</a>
-<span class="sourceLineNo">079</span><a id="line.79">     * &lt;p&gt;</a>
-<span class="sourceLineNo">080</span><a id="line.80">     * If the directory is created, the {@link PathConsumer} will be called.</a>
-<span class="sourceLineNo">081</span><a id="line.81">     *</a>
-<span class="sourceLineNo">082</span><a id="line.82">     * @param onDirectoryCreated {@link PathConsumer}, called when a directory is created.</a>
-<span class="sourceLineNo">083</span><a id="line.83">     * @throws IOException if I/O error occurred</a>
-<span class="sourceLineNo">084</span><a id="line.84">     */</a>
-<span class="sourceLineNo">085</span><a id="line.85">    public void createDirectoryIfNotExists(@NotNull PathConsumer onDirectoryCreated) throws IOException {</a>
-<span class="sourceLineNo">086</span><a id="line.86">        if (Files.isDirectory(directory)) {</a>
-<span class="sourceLineNo">087</span><a id="line.87">            return;</a>
-<span class="sourceLineNo">088</span><a id="line.88">        }</a>
-<span class="sourceLineNo">089</span><a id="line.89"></a>
-<span class="sourceLineNo">090</span><a id="line.90">        Files.createDirectories(directory);</a>
-<span class="sourceLineNo">091</span><a id="line.91">        onDirectoryCreated.accept(directory);</a>
-<span class="sourceLineNo">092</span><a id="line.92">    }</a>
-<span class="sourceLineNo">093</span><a id="line.93"></a>
-<span class="sourceLineNo">094</span><a id="line.94">    /**</a>
-<span class="sourceLineNo">095</span><a id="line.95">     * Loads message files from directory.</a>
-<span class="sourceLineNo">096</span><a id="line.96">     *</a>
-<span class="sourceLineNo">097</span><a id="line.97">     * @throws IOException if I/O error occurred</a>
-<span class="sourceLineNo">098</span><a id="line.98">     */</a>
-<span class="sourceLineNo">099</span><a id="line.99">    public void load() throws IOException {</a>
-<span class="sourceLineNo">100</span><a id="line.100">        if (!loadedLoaders.isEmpty()) {</a>
-<span class="sourceLineNo">101</span><a id="line.101">            unload();</a>
-<span class="sourceLineNo">102</span><a id="line.102">        }</a>
+<span class="sourceLineNo">066</span><a id="line.66">    private final Path directory;</a>
+<span class="sourceLineNo">067</span><a id="line.67">    private final Supplier&lt;TranslationRegistry&gt; registrySupplier;</a>
+<span class="sourceLineNo">068</span><a id="line.68">    private final @Nullable PathConsumer onDirectoryCreated;</a>
+<span class="sourceLineNo">069</span><a id="line.69">    private final @Nullable String version;</a>
+<span class="sourceLineNo">070</span><a id="line.70">    private final @Nullable TranslationLoaderCreator translationLoaderCreator;</a>
+<span class="sourceLineNo">071</span><a id="line.71"></a>
+<span class="sourceLineNo">072</span><a id="line.72">    private final Set&lt;Locale&gt; loadedLocales = new HashSet&lt;&gt;();</a>
+<span class="sourceLineNo">073</span><a id="line.73"></a>
+<span class="sourceLineNo">074</span><a id="line.74">    private TranslationRegistry registry;</a>
+<span class="sourceLineNo">075</span><a id="line.75"></a>
+<span class="sourceLineNo">076</span><a id="line.76">    TranslationDirectory(@NotNull Path directory, @NotNull Supplier&lt;TranslationRegistry&gt; registrySupplier,</a>
+<span class="sourceLineNo">077</span><a id="line.77">                         @Nullable PathConsumer onDirectoryCreated,</a>
+<span class="sourceLineNo">078</span><a id="line.78">                         @Nullable String version, @Nullable TranslationLoaderCreator translationLoaderCreator) {</a>
+<span class="sourceLineNo">079</span><a id="line.79">        this.directory = directory;</a>
+<span class="sourceLineNo">080</span><a id="line.80">        this.registrySupplier = registrySupplier;</a>
+<span class="sourceLineNo">081</span><a id="line.81">        this.onDirectoryCreated = onDirectoryCreated;</a>
+<span class="sourceLineNo">082</span><a id="line.82">        this.version = version;</a>
+<span class="sourceLineNo">083</span><a id="line.83">        this.translationLoaderCreator = translationLoaderCreator;</a>
+<span class="sourceLineNo">084</span><a id="line.84">    }</a>
+<span class="sourceLineNo">085</span><a id="line.85"></a>
+<span class="sourceLineNo">086</span><a id="line.86">    /**</a>
+<span class="sourceLineNo">087</span><a id="line.87">     * Loads message files from directory.</a>
+<span class="sourceLineNo">088</span><a id="line.88">     * &lt;p&gt;</a>
+<span class="sourceLineNo">089</span><a id="line.89">     * If the directory does not exist, this method will create it.</a>
+<span class="sourceLineNo">090</span><a id="line.90">     * &lt;p&gt;</a>
+<span class="sourceLineNo">091</span><a id="line.91">     * This method may also use {@link TranslationLoaderCreator} to add messages and save them to a file.</a>
+<span class="sourceLineNo">092</span><a id="line.92">     *</a>
+<span class="sourceLineNo">093</span><a id="line.93">     * @throws IOException if I/O error occurred</a>
+<span class="sourceLineNo">094</span><a id="line.94">     */</a>
+<span class="sourceLineNo">095</span><a id="line.95">    public void load() throws IOException {</a>
+<span class="sourceLineNo">096</span><a id="line.96">        if (registry != null) {</a>
+<span class="sourceLineNo">097</span><a id="line.97">            unload();</a>
+<span class="sourceLineNo">098</span><a id="line.98">        }</a>
+<span class="sourceLineNo">099</span><a id="line.99"></a>
+<span class="sourceLineNo">100</span><a id="line.100">        registry = registrySupplier.get();</a>
+<span class="sourceLineNo">101</span><a id="line.101"></a>
+<span class="sourceLineNo">102</span><a id="line.102">        createDirectoryIfNotExists();</a>
 <span class="sourceLineNo">103</span><a id="line.103"></a>
-<span class="sourceLineNo">104</span><a id="line.104">        if (!Files.isDirectory(directory)) {</a>
-<span class="sourceLineNo">105</span><a id="line.105">            return;</a>
-<span class="sourceLineNo">106</span><a id="line.106">        }</a>
-<span class="sourceLineNo">107</span><a id="line.107"></a>
-<span class="sourceLineNo">108</span><a id="line.108">        try (var list = Files.list(directory)) {</a>
-<span class="sourceLineNo">109</span><a id="line.109">            list.filter(Files::isRegularFile)</a>
-<span class="sourceLineNo">110</span><a id="line.110">                    .map(this::loadFile)</a>
-<span class="sourceLineNo">111</span><a id="line.111">                    .filter(Objects::nonNull)</a>
-<span class="sourceLineNo">112</span><a id="line.112">                    .filter(TranslationLoader::isLoaded)</a>
-<span class="sourceLineNo">113</span><a id="line.113">                    .forEach(loadedLoaders::add);</a>
-<span class="sourceLineNo">114</span><a id="line.114">        }</a>
-<span class="sourceLineNo">115</span><a id="line.115"></a>
-<span class="sourceLineNo">116</span><a id="line.116">        loadedLoaders.forEach(TranslationLoader::register);</a>
-<span class="sourceLineNo">117</span><a id="line.117">        GlobalTranslator.get().addSource(registry);</a>
-<span class="sourceLineNo">118</span><a id="line.118">    }</a>
-<span class="sourceLineNo">119</span><a id="line.119"></a>
-<span class="sourceLineNo">120</span><a id="line.120">    /**</a>
-<span class="sourceLineNo">121</span><a id="line.121">     * Unloads messages from the {@link GlobalTranslator}.</a>
-<span class="sourceLineNo">122</span><a id="line.122">     */</a>
-<span class="sourceLineNo">123</span><a id="line.123">    public void unload() {</a>
-<span class="sourceLineNo">124</span><a id="line.124">        GlobalTranslator.get().removeSource(registry);</a>
-<span class="sourceLineNo">125</span><a id="line.125">        loadedLoaders.clear();</a>
-<span class="sourceLineNo">126</span><a id="line.126">        registry = registrySupplier.get();</a>
-<span class="sourceLineNo">127</span><a id="line.127">    }</a>
-<span class="sourceLineNo">128</span><a id="line.128"></a>
-<span class="sourceLineNo">129</span><a id="line.129">    /**</a>
-<span class="sourceLineNo">130</span><a id="line.130">     * Gets the directory path.</a>
-<span class="sourceLineNo">131</span><a id="line.131">     *</a>
-<span class="sourceLineNo">132</span><a id="line.132">     * @return the directory path</a>
-<span class="sourceLineNo">133</span><a id="line.133">     */</a>
-<span class="sourceLineNo">134</span><a id="line.134">    public @NotNull Path getDirectory() {</a>
-<span class="sourceLineNo">135</span><a id="line.135">        return directory;</a>
-<span class="sourceLineNo">136</span><a id="line.136">    }</a>
-<span class="sourceLineNo">137</span><a id="line.137"></a>
-<span class="sourceLineNo">138</span><a id="line.138">    /**</a>
-<span class="sourceLineNo">139</span><a id="line.139">     * Gets the {@link TranslationRegistry} to register messages</a>
-<span class="sourceLineNo">140</span><a id="line.140">     *</a>
-<span class="sourceLineNo">141</span><a id="line.141">     * @return the {@link TranslationRegistry}</a>
-<span class="sourceLineNo">142</span><a id="line.142">     */</a>
-<span class="sourceLineNo">143</span><a id="line.143">    public @NotNull TranslationRegistry getRegistry() {</a>
-<span class="sourceLineNo">144</span><a id="line.144">        return registry;</a>
-<span class="sourceLineNo">145</span><a id="line.145">    }</a>
-<span class="sourceLineNo">146</span><a id="line.146"></a>
-<span class="sourceLineNo">147</span><a id="line.147">    /**</a>
-<span class="sourceLineNo">148</span><a id="line.148">     * Gets the loaded {@link TranslationLoader}s.</a>
-<span class="sourceLineNo">149</span><a id="line.149">     *</a>
-<span class="sourceLineNo">150</span><a id="line.150">     * @return the loaded {@link TranslationLoader}s</a>
-<span class="sourceLineNo">151</span><a id="line.151">     */</a>
-<span class="sourceLineNo">152</span><a id="line.152">    public @NotNull @Unmodifiable Set&lt;TranslationLoader&gt; getLoadedTranslationLoaders() {</a>
-<span class="sourceLineNo">153</span><a id="line.153">        return Set.copyOf(loadedLoaders);</a>
-<span class="sourceLineNo">154</span><a id="line.154">    }</a>
-<span class="sourceLineNo">155</span><a id="line.155"></a>
-<span class="sourceLineNo">156</span><a id="line.156">    /**</a>
-<span class="sourceLineNo">157</span><a id="line.157">     * Loads messages from the file.</a>
-<span class="sourceLineNo">158</span><a id="line.158">     *</a>
-<span class="sourceLineNo">159</span><a id="line.159">     * @param file the file to load</a>
-<span class="sourceLineNo">160</span><a id="line.160">     * @return the {@link TranslationLoader} of the file</a>
-<span class="sourceLineNo">161</span><a id="line.161">     */</a>
-<span class="sourceLineNo">162</span><a id="line.162">    protected @Nullable TranslationLoader loadFile(@NotNull Path file) {</a>
-<span class="sourceLineNo">163</span><a id="line.163">        var locale = LocaleParser.fromFileName(file);</a>
+<span class="sourceLineNo">104</span><a id="line.104">        try (var list = Files.list(directory)) {</a>
+<span class="sourceLineNo">105</span><a id="line.105">            list.filter(Files::isRegularFile)</a>
+<span class="sourceLineNo">106</span><a id="line.106">                    .map(this::loadFile)</a>
+<span class="sourceLineNo">107</span><a id="line.107">                    .filter(Objects::nonNull)</a>
+<span class="sourceLineNo">108</span><a id="line.108">                    .filter(TranslationLoader::isLoaded)</a>
+<span class="sourceLineNo">109</span><a id="line.109">                    .forEach(this::updateAndRegister);</a>
+<span class="sourceLineNo">110</span><a id="line.110">        }</a>
+<span class="sourceLineNo">111</span><a id="line.111"></a>
+<span class="sourceLineNo">112</span><a id="line.112">        GlobalTranslator.get().addSource(registry);</a>
+<span class="sourceLineNo">113</span><a id="line.113">    }</a>
+<span class="sourceLineNo">114</span><a id="line.114"></a>
+<span class="sourceLineNo">115</span><a id="line.115">    /**</a>
+<span class="sourceLineNo">116</span><a id="line.116">     * Unloads messages from the {@link GlobalTranslator}.</a>
+<span class="sourceLineNo">117</span><a id="line.117">     */</a>
+<span class="sourceLineNo">118</span><a id="line.118">    public void unload() {</a>
+<span class="sourceLineNo">119</span><a id="line.119">        GlobalTranslator.get().removeSource(registry);</a>
+<span class="sourceLineNo">120</span><a id="line.120">        loadedLocales.clear();</a>
+<span class="sourceLineNo">121</span><a id="line.121">        registry = null;</a>
+<span class="sourceLineNo">122</span><a id="line.122">    }</a>
+<span class="sourceLineNo">123</span><a id="line.123"></a>
+<span class="sourceLineNo">124</span><a id="line.124">    /**</a>
+<span class="sourceLineNo">125</span><a id="line.125">     * Gets the directory path.</a>
+<span class="sourceLineNo">126</span><a id="line.126">     *</a>
+<span class="sourceLineNo">127</span><a id="line.127">     * @return the directory path</a>
+<span class="sourceLineNo">128</span><a id="line.128">     */</a>
+<span class="sourceLineNo">129</span><a id="line.129">    public @NotNull Path getDirectory() {</a>
+<span class="sourceLineNo">130</span><a id="line.130">        return directory;</a>
+<span class="sourceLineNo">131</span><a id="line.131">    }</a>
+<span class="sourceLineNo">132</span><a id="line.132"></a>
+<span class="sourceLineNo">133</span><a id="line.133">    /**</a>
+<span class="sourceLineNo">134</span><a id="line.134">     * Gets the {@link TranslationRegistry} to register messages</a>
+<span class="sourceLineNo">135</span><a id="line.135">     *</a>
+<span class="sourceLineNo">136</span><a id="line.136">     * @return the {@link TranslationRegistry}</a>
+<span class="sourceLineNo">137</span><a id="line.137">     */</a>
+<span class="sourceLineNo">138</span><a id="line.138">    public @NotNull TranslationRegistry getRegistry() {</a>
+<span class="sourceLineNo">139</span><a id="line.139">        if (registry == null) {</a>
+<span class="sourceLineNo">140</span><a id="line.140">            throw new IllegalStateException("The registry is not created (Not loaded yet?)");</a>
+<span class="sourceLineNo">141</span><a id="line.141">        }</a>
+<span class="sourceLineNo">142</span><a id="line.142"></a>
+<span class="sourceLineNo">143</span><a id="line.143">        return registry;</a>
+<span class="sourceLineNo">144</span><a id="line.144">    }</a>
+<span class="sourceLineNo">145</span><a id="line.145"></a>
+<span class="sourceLineNo">146</span><a id="line.146">    /**</a>
+<span class="sourceLineNo">147</span><a id="line.147">     * Gets the set of the loaded {@link Locale}s.</a>
+<span class="sourceLineNo">148</span><a id="line.148">     *</a>
+<span class="sourceLineNo">149</span><a id="line.149">     * @return the set of the loaded {@link Locale}s</a>
+<span class="sourceLineNo">150</span><a id="line.150">     */</a>
+<span class="sourceLineNo">151</span><a id="line.151">    public Set&lt;Locale&gt; getLoadedLocales() {</a>
+<span class="sourceLineNo">152</span><a id="line.152">        return loadedLocales;</a>
+<span class="sourceLineNo">153</span><a id="line.153">    }</a>
+<span class="sourceLineNo">154</span><a id="line.154"></a>
+<span class="sourceLineNo">155</span><a id="line.155">    private void createDirectoryIfNotExists() throws IOException {</a>
+<span class="sourceLineNo">156</span><a id="line.156">        if (!Files.isDirectory(directory)) {</a>
+<span class="sourceLineNo">157</span><a id="line.157">            Files.createDirectories(directory);</a>
+<span class="sourceLineNo">158</span><a id="line.158"></a>
+<span class="sourceLineNo">159</span><a id="line.159">            if (onDirectoryCreated != null) {</a>
+<span class="sourceLineNo">160</span><a id="line.160">                onDirectoryCreated.accept(directory);</a>
+<span class="sourceLineNo">161</span><a id="line.161">            }</a>
+<span class="sourceLineNo">162</span><a id="line.162">        }</a>
+<span class="sourceLineNo">163</span><a id="line.163">    }</a>
 <span class="sourceLineNo">164</span><a id="line.164"></a>
-<span class="sourceLineNo">165</span><a id="line.165">        if (locale == null) {</a>
-<span class="sourceLineNo">166</span><a id="line.166">            return null;</a>
-<span class="sourceLineNo">167</span><a id="line.167">        }</a>
-<span class="sourceLineNo">168</span><a id="line.168"></a>
-<span class="sourceLineNo">169</span><a id="line.169">        var builder =</a>
-<span class="sourceLineNo">170</span><a id="line.170">                TranslationLoader.newBuilder()</a>
-<span class="sourceLineNo">171</span><a id="line.171">                        .setFilePath(file)</a>
-<span class="sourceLineNo">172</span><a id="line.172">                        .setLocale(locale)</a>
-<span class="sourceLineNo">173</span><a id="line.173">                        .setRegistry(registry);</a>
-<span class="sourceLineNo">174</span><a id="line.174"></a>
-<span class="sourceLineNo">175</span><a id="line.175">        TranslationLoader loader;</a>
-<span class="sourceLineNo">176</span><a id="line.176"></a>
-<span class="sourceLineNo">177</span><a id="line.177">        switch (ExtensionUtil.getExtension(file)) {</a>
-<span class="sourceLineNo">178</span><a id="line.178">            case "yml":</a>
-<span class="sourceLineNo">179</span><a id="line.179">            case "yaml":</a>
-<span class="sourceLineNo">180</span><a id="line.180">                loader = builder.createYamlConfigurationLoader();</a>
+<span class="sourceLineNo">165</span><a id="line.165">    private @Nullable TranslationLoader loadFile(@NotNull Path file) {</a>
+<span class="sourceLineNo">166</span><a id="line.166">        var locale = LocaleParser.fromFileName(file);</a>
+<span class="sourceLineNo">167</span><a id="line.167"></a>
+<span class="sourceLineNo">168</span><a id="line.168">        if (locale == null) {</a>
+<span class="sourceLineNo">169</span><a id="line.169">            return null;</a>
+<span class="sourceLineNo">170</span><a id="line.170">        }</a>
+<span class="sourceLineNo">171</span><a id="line.171"></a>
+<span class="sourceLineNo">172</span><a id="line.172">        TranslationLoader loader;</a>
+<span class="sourceLineNo">173</span><a id="line.173"></a>
+<span class="sourceLineNo">174</span><a id="line.174">        switch (ExtensionUtil.getExtension(file)) {</a>
+<span class="sourceLineNo">175</span><a id="line.175">            case "yml":</a>
+<span class="sourceLineNo">176</span><a id="line.176">            case "yaml":</a>
+<span class="sourceLineNo">177</span><a id="line.177">                loader = FileConfigurationLoader.create(locale, YamlConfiguration.create(file));</a>
+<span class="sourceLineNo">178</span><a id="line.178">                break;</a>
+<span class="sourceLineNo">179</span><a id="line.179">            case "properties":</a>
+<span class="sourceLineNo">180</span><a id="line.180">                loader = FileConfigurationLoader.create(locale, PropertiesConfiguration.create(file));</a>
 <span class="sourceLineNo">181</span><a id="line.181">                break;</a>
-<span class="sourceLineNo">182</span><a id="line.182">            case "properties":</a>
-<span class="sourceLineNo">183</span><a id="line.183">                loader = builder.createPropertiesConfigurationLoader();</a>
-<span class="sourceLineNo">184</span><a id="line.184">                break;</a>
-<span class="sourceLineNo">185</span><a id="line.185">            default:</a>
-<span class="sourceLineNo">186</span><a id="line.186">                return null;</a>
-<span class="sourceLineNo">187</span><a id="line.187">        }</a>
-<span class="sourceLineNo">188</span><a id="line.188"></a>
-<span class="sourceLineNo">189</span><a id="line.189">        try {</a>
-<span class="sourceLineNo">190</span><a id="line.190">            loader.load();</a>
-<span class="sourceLineNo">191</span><a id="line.191">        } catch (IOException e) {</a>
-<span class="sourceLineNo">192</span><a id="line.192">            throw new RuntimeException(e);</a>
-<span class="sourceLineNo">193</span><a id="line.193">        }</a>
+<span class="sourceLineNo">182</span><a id="line.182">            default:</a>
+<span class="sourceLineNo">183</span><a id="line.183">                return null;</a>
+<span class="sourceLineNo">184</span><a id="line.184">        }</a>
+<span class="sourceLineNo">185</span><a id="line.185"></a>
+<span class="sourceLineNo">186</span><a id="line.186">        try {</a>
+<span class="sourceLineNo">187</span><a id="line.187">            loader.load();</a>
+<span class="sourceLineNo">188</span><a id="line.188">        } catch (IOException e) {</a>
+<span class="sourceLineNo">189</span><a id="line.189">            throw new RuntimeException(e);</a>
+<span class="sourceLineNo">190</span><a id="line.190">        }</a>
+<span class="sourceLineNo">191</span><a id="line.191"></a>
+<span class="sourceLineNo">192</span><a id="line.192">        return loader;</a>
+<span class="sourceLineNo">193</span><a id="line.193">    }</a>
 <span class="sourceLineNo">194</span><a id="line.194"></a>
-<span class="sourceLineNo">195</span><a id="line.195">        return loader;</a>
-<span class="sourceLineNo">196</span><a id="line.196">    }</a>
-<span class="sourceLineNo">197</span><a id="line.197">}</a>
+<span class="sourceLineNo">195</span><a id="line.195">    private void updateAndRegister(@NotNull TranslationLoader loader) {</a>
+<span class="sourceLineNo">196</span><a id="line.196">        if (translationLoaderCreator != null &amp;&amp;</a>
+<span class="sourceLineNo">197</span><a id="line.197">                version != null &amp;&amp; !version.isEmpty() &amp;&amp; !loader.getVersion().equals(version)) {</a>
+<span class="sourceLineNo">198</span><a id="line.198">            TranslationLoader other;</a>
+<span class="sourceLineNo">199</span><a id="line.199"></a>
+<span class="sourceLineNo">200</span><a id="line.200">            try {</a>
+<span class="sourceLineNo">201</span><a id="line.201">                other = translationLoaderCreator.createLoader(loader.getLocale());</a>
+<span class="sourceLineNo">202</span><a id="line.202">            } catch (IOException e) {</a>
+<span class="sourceLineNo">203</span><a id="line.203">                throw new RuntimeException("Could not get the merger (" + loader.getLocale() + ")", e);</a>
+<span class="sourceLineNo">204</span><a id="line.204">            }</a>
+<span class="sourceLineNo">205</span><a id="line.205"></a>
+<span class="sourceLineNo">206</span><a id="line.206">            if (other != null &amp;&amp; other.isLoaded()) {</a>
+<span class="sourceLineNo">207</span><a id="line.207">                loader.merge(other);</a>
+<span class="sourceLineNo">208</span><a id="line.208">                loader.setVersion(other.getVersion());</a>
+<span class="sourceLineNo">209</span><a id="line.209"></a>
+<span class="sourceLineNo">210</span><a id="line.210">                try {</a>
+<span class="sourceLineNo">211</span><a id="line.211">                    loader.save();</a>
+<span class="sourceLineNo">212</span><a id="line.212">                } catch (IOException e) {</a>
+<span class="sourceLineNo">213</span><a id="line.213">                    throw new RuntimeException("Could not save the loader", e);</a>
+<span class="sourceLineNo">214</span><a id="line.214">                }</a>
+<span class="sourceLineNo">215</span><a id="line.215">            }</a>
+<span class="sourceLineNo">216</span><a id="line.216">        }</a>
+<span class="sourceLineNo">217</span><a id="line.217"></a>
+<span class="sourceLineNo">218</span><a id="line.218">        loader.register(registry);</a>
+<span class="sourceLineNo">219</span><a id="line.219">        loadedLocales.add(loader.getLocale());</a>
+<span class="sourceLineNo">220</span><a id="line.220">    }</a>
+<span class="sourceLineNo">221</span><a id="line.221">}</a>
 
 
 
