@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -17,10 +18,15 @@ import java.util.function.Supplier;
 public final class TranslationDirectoryBuilder {
 
     private Path directory;
+
     private Supplier<TranslationRegistry> registrySupplier;
+    private Key key;
+    private Locale defaultLocale;
+
     private PathConsumer onDirectoryCreated;
     private String version;
     private MessageMerger messageMerger;
+
 
     TranslationDirectoryBuilder() {
     }
@@ -57,7 +63,20 @@ public final class TranslationDirectoryBuilder {
      */
     @Contract("_ -> this")
     public @NotNull TranslationDirectoryBuilder setKey(@NotNull Key key) {
-        return setRegistrySupplier(() -> TranslationRegistry.create(key));
+        this.key = key;
+        return this;
+    }
+
+    /**
+     * Sets the {@link Locale} to set {@link TranslationRegistry#defaultLocale(Locale)}.
+     *
+     * @param locale the default locale that used in {@link TranslationRegistry#defaultLocale(Locale)}
+     * @return this builder
+     */
+    @Contract("_ -> this")
+    public @NotNull TranslationDirectoryBuilder setDefaultLocale(@NotNull Locale locale) {
+        this.defaultLocale = locale;
+        return this;
     }
 
     /**
@@ -104,11 +123,22 @@ public final class TranslationDirectoryBuilder {
      *
      * @return a new {@link TranslationDirectory}
      * @throws NullPointerException the directory is not set by {@link #setDirectory(Path)}
-     * @throws NullPointerException the registry supplier is not set by {@link #setRegistrySupplier(Supplier)} or {@link #setKey(Key)}
+     * @throws NullPointerException the registry supplier is not set by {@link #setRegistrySupplier(Supplier)} or could not be created
      */
     @Contract(value = "-> new", pure = true)
     public @NotNull TranslationDirectory build() {
         Objects.requireNonNull(directory);
+
+        if (registrySupplier == null) {
+            Objects.requireNonNull(key);
+            Objects.requireNonNull(defaultLocale);
+            registrySupplier = () -> {
+                var registry = TranslationRegistry.create(key);
+                registry.defaultLocale(defaultLocale);
+                return registry;
+            };
+        }
+
         Objects.requireNonNull(registrySupplier);
         return new TranslationDirectory(directory, registrySupplier, onDirectoryCreated, version, messageMerger);
     }
