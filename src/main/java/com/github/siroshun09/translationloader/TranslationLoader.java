@@ -56,6 +56,11 @@ public interface TranslationLoader {
      */
     @NotNull String getVersion();
 
+    /**
+     * Sets the version of this translation.
+     *
+     * @param newVersion the new version
+     */
     void setVersion(@NotNull String newVersion);
 
     /**
