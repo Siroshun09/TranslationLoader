@@ -196,7 +196,13 @@ public class TranslationDirectory {
     private void updateAndRegister(@NotNull TranslationLoader loader) {
         if (messageMerger != null &&
                 version != null && !version.isEmpty() && !loader.getVersion().equals(version)) {
-            var other = messageMerger.createLoader(loader.getLocale());
+            TranslationLoader other;
+
+            try {
+                other = messageMerger.createLoader(loader.getLocale());
+            } catch (IOException e) {
+                throw new RuntimeException("Could not get the merger (" + loader.getLocale() + ")", e);
+            }
 
             if (other != null && other.isLoaded()) {
                 loader.merge(other);

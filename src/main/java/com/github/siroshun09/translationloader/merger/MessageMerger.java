@@ -4,6 +4,7 @@ import com.github.siroshun09.translationloader.TranslationLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.Locale;
 
 /**
@@ -21,7 +22,8 @@ public interface MessageMerger {
      *
      * @param locale the locale of the translation
      * @return the {@link TranslationLoader} for the locale if it exists, or {@code null} if it does not.
+     * @throws IOException if I/O error occurred
      */
-    @Nullable TranslationLoader createLoader(@NotNull Locale locale);
+    @Nullable TranslationLoader createLoader(@NotNull Locale locale) throws IOException;
 
 }
