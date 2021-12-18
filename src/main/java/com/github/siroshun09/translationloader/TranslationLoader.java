@@ -2,26 +2,13 @@ package com.github.siroshun09.translationloader;
 
 import net.kyori.adventure.translation.TranslationRegistry;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * An interface to load messages from the file or the directory.
- */
 public interface TranslationLoader {
-
-    /**
-     * Creates the builder of {@link TranslationLoader}.
-     *
-     * @return new {@link TranslationLoaderBuilder}
-     */
-    static @NotNull TranslationLoaderBuilder newBuilder() {
-        return new TranslationLoaderBuilder();
-    }
 
     /**
      * Loads messages from the file or the directory.
@@ -38,28 +25,13 @@ public interface TranslationLoader {
     boolean isLoaded();
 
     /**
-     * Registers to {@link TranslationRegistry}.
-     * <p>
-     * If  {@link TranslationLoader#isLoaded()} is false, this method will not register to registry.
+     * Registers messages to the {@link TranslationRegistry}.
      *
-     * @return true if the registration was successful, false otherwise
+     * @param registry the registry to register messages
+     * @return {@code true} if the registration was successful, {@code false} otherwise
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean register();
-
-    /**
-     * Gets the path of the message file or the directory.
-     *
-     * @return the path of the message file
-     */
-    @NotNull Path getFilePath();
-
-    /**
-     * Gets the {@link TranslationRegistry} to register messages
-     *
-     * @return the {@link TranslationRegistry}
-     */
-    @NotNull TranslationRegistry getRegistry();
+    boolean register(@NotNull TranslationRegistry registry);
 
     /**
      * Gets the locale of messages that this loader will load.
@@ -73,5 +45,46 @@ public interface TranslationLoader {
      *
      * @return the message map
      */
-    @NotNull @Unmodifiable Map<String, String> getMessageMap();
+    @NotNull @UnmodifiableView Map<String, String> getMessageMap();
+
+    /**
+     * Gets the version of the translation.
+     * <p>
+     * If this loader is not loaded, this method will return an empty string.
+     *
+     * @return the version of the translation
+     */
+    @NotNull String getVersion();
+
+    /**
+     * Sets the version of this translation.
+     *
+     * @param newVersion the new version
+     */
+    void setVersion(@NotNull String newVersion);
+
+    /**
+     * Merges the other {@link TranslationLoader} into this loader.
+     * <p>
+     * If there are message keys that does not exist in this loader,
+     * they will be added from another loader.
+     *
+     * @param other the other {@link TranslationLoader}
+     * @throws IllegalStateException the other {@link TranslationLoader} is not loaded
+     */
+    void merge(@NotNull TranslationLoader other);
+
+    /**
+     * Checks if this loader is modified by {@link #merge(TranslationLoader)} method.
+     *
+     * @return {@code true} if this loader is modified, {@code false} otherwise
+     */
+    boolean isModified();
+
+    /**
+     * Saves messages to the file if {@link #isModified()} returns {@code true}.
+     *
+     * @throws IOException if I/O error occurred
+     */
+    void save() throws IOException;
 }

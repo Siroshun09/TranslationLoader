@@ -1,0 +1,7 @@
+v: "1.0.0"
+sample-key: "1"
+example:
+  text: "abc"
+  integer: 100
+  decimal: 12.3
+  bool: true

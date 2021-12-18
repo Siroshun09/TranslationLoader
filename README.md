@@ -20,7 +20,7 @@ If needed, you should add those dependencies.
 <dependency>
     <groupId>com.github.siroshun09.translationloader</groupId>
     <artifactId>translationloader</artifactId>
-    <version>1.2.0</version>
+    <version>2.0.0-SNAPSHOT</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -29,7 +29,7 @@ If needed, you should add those dependencies.
 
 ```groovy
 dependencies {
-    implementation 'com.github.siroshun09.translationloader:translationloader:1.2.0'
+    implementation 'com.github.siroshun09.translationloader:translationloader:2.0.0-SNAPSHOT'
 }
 ```
 
@@ -37,7 +37,7 @@ dependencies {
 
 ```kotlin
 dependencies {
-    implementation("com.github.siroshun09.translationloader:translationloader:1.2.0")
+    implementation("com.github.siroshun09.translationloader:translationloader:2.0.0-SNAPSHOT")
 }
 ```
 

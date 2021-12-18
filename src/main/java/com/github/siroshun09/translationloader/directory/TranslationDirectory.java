@@ -1,5 +1,8 @@
 package com.github.siroshun09.translationloader.directory;
 
+import com.github.siroshun09.configapi.api.file.PropertiesConfiguration;
+import com.github.siroshun09.configapi.yaml.YamlConfiguration;
+import com.github.siroshun09.translationloader.FileConfigurationLoader;
 import com.github.siroshun09.translationloader.TranslationLoader;
 import com.github.siroshun09.translationloader.util.ExtensionUtil;
 import com.github.siroshun09.translationloader.util.LocaleParser;
@@ -10,12 +13,12 @@ import net.kyori.adventure.translation.TranslationRegistry;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -35,7 +38,7 @@ public class TranslationDirectory {
     @Contract("_, _ -> new")
     public static @NotNull TranslationDirectory create(@NotNull Path directory,
                                                        @NotNull Supplier<TranslationRegistry> registrySupplier) {
-        return new TranslationDirectory(directory, registrySupplier);
+        return new TranslationDirectory(directory, registrySupplier, null, null, null);
     }
 
     /**
@@ -50,70 +53,62 @@ public class TranslationDirectory {
         return create(directory, () -> TranslationRegistry.create(key));
     }
 
+    /**
+     * Creates a new {@link TranslationDirectoryBuilder}.
+     *
+     * @return new {@link TranslationDirectoryBuilder}
+     */
+    @Contract(value = " -> new", pure = true)
+    public static @NotNull TranslationDirectoryBuilder newBuilder() {
+        return new TranslationDirectoryBuilder();
+    }
+
     private final Path directory;
     private final Supplier<TranslationRegistry> registrySupplier;
+    private final @Nullable PathConsumer onDirectoryCreated;
+    private final @Nullable String version;
+    private final @Nullable TranslationLoaderCreator translationLoaderCreator;
 
-    private final Set<TranslationLoader> loadedLoaders = new HashSet<>();
+    private final Set<Locale> loadedLocales = new HashSet<>();
+
     private TranslationRegistry registry;
 
-    private TranslationDirectory(@NotNull Path directory,
-                                 @NotNull Supplier<TranslationRegistry> registrySupplier) {
+    TranslationDirectory(@NotNull Path directory, @NotNull Supplier<TranslationRegistry> registrySupplier,
+                         @Nullable PathConsumer onDirectoryCreated,
+                         @Nullable String version, @Nullable TranslationLoaderCreator translationLoaderCreator) {
         this.directory = directory;
         this.registrySupplier = registrySupplier;
-        this.registry = registrySupplier.get();
-    }
-
-    /**
-     * Creates the directory if not exists.
-     *
-     * @throws IOException if I/O error occurred
-     */
-    public void createDirectoryIfNotExists() throws IOException {
-        if (!Files.isDirectory(directory)) {
-            Files.createDirectories(directory);
-        }
-    }
-
-    /**
-     * Creates the directory if not exists.
-     * <p>
-     * If the directory is created, the {@link PathConsumer} will be called.
-     *
-     * @param onDirectoryCreated {@link PathConsumer}, called when a directory is created.
-     * @throws IOException if I/O error occurred
-     */
-    public void createDirectoryIfNotExists(@NotNull PathConsumer onDirectoryCreated) throws IOException {
-        if (Files.isDirectory(directory)) {
-            return;
-        }
-
-        Files.createDirectories(directory);
-        onDirectoryCreated.accept(directory);
+        this.onDirectoryCreated = onDirectoryCreated;
+        this.version = version;
+        this.translationLoaderCreator = translationLoaderCreator;
     }
 
     /**
      * Loads message files from directory.
+     * <p>
+     * If the directory does not exist, this method will create it.
+     * <p>
+     * This method may also use {@link TranslationLoaderCreator} to add messages and save them to a file.
      *
      * @throws IOException if I/O error occurred
      */
     public void load() throws IOException {
-        if (!loadedLoaders.isEmpty()) {
+        if (registry != null) {
             unload();
         }
 
-        if (!Files.isDirectory(directory)) {
-            return;
-        }
+        registry = registrySupplier.get();
+
+        createDirectoryIfNotExists();
 
         try (var list = Files.list(directory)) {
             list.filter(Files::isRegularFile)
                     .map(this::loadFile)
                     .filter(Objects::nonNull)
                     .filter(TranslationLoader::isLoaded)
-                    .forEach(loadedLoaders::add);
+                    .forEach(this::updateAndRegister);
         }
 
-        loadedLoaders.forEach(TranslationLoader::register);
         GlobalTranslator.get().addSource(registry);
     }
 
@@ -122,8 +117,8 @@ public class TranslationDirectory {
      */
     public void unload() {
         GlobalTranslator.get().removeSource(registry);
-        loadedLoaders.clear();
-        registry = registrySupplier.get();
+        loadedLocales.clear();
+        registry = null;
     }
 
     /**
@@ -141,46 +136,48 @@ public class TranslationDirectory {
      * @return the {@link TranslationRegistry}
      */
     public @NotNull TranslationRegistry getRegistry() {
+        if (registry == null) {
+            throw new IllegalStateException("The registry is not created (Not loaded yet?)");
+        }
+
         return registry;
     }
 
     /**
-     * Gets the loaded {@link TranslationLoader}s.
+     * Gets the set of the loaded {@link Locale}s.
      *
-     * @return the loaded {@link TranslationLoader}s
+     * @return the set of the loaded {@link Locale}s
      */
-    public @NotNull @Unmodifiable Set<TranslationLoader> getLoadedTranslationLoaders() {
-        return Set.copyOf(loadedLoaders);
+    public Set<Locale> getLoadedLocales() {
+        return loadedLocales;
     }
 
-    /**
-     * Loads messages from the file.
-     *
-     * @param file the file to load
-     * @return the {@link TranslationLoader} of the file
-     */
-    protected @Nullable TranslationLoader loadFile(@NotNull Path file) {
+    private void createDirectoryIfNotExists() throws IOException {
+        if (!Files.isDirectory(directory)) {
+            Files.createDirectories(directory);
+
+            if (onDirectoryCreated != null) {
+                onDirectoryCreated.accept(directory);
+            }
+        }
+    }
+
+    private @Nullable TranslationLoader loadFile(@NotNull Path file) {
         var locale = LocaleParser.fromFileName(file);
 
         if (locale == null) {
             return null;
         }
 
-        var builder =
-                TranslationLoader.newBuilder()
-                        .setFilePath(file)
-                        .setLocale(locale)
-                        .setRegistry(registry);
-
         TranslationLoader loader;
 
         switch (ExtensionUtil.getExtension(file)) {
             case "yml":
             case "yaml":
-                loader = builder.createYamlConfigurationLoader();
+                loader = FileConfigurationLoader.create(locale, YamlConfiguration.create(file));
                 break;
             case "properties":
-                loader = builder.createPropertiesConfigurationLoader();
+                loader = FileConfigurationLoader.create(locale, PropertiesConfiguration.create(file));
                 break;
             default:
                 return null;
@@ -193,5 +190,32 @@ public class TranslationDirectory {
         }
 
         return loader;
+    }
+
+    private void updateAndRegister(@NotNull TranslationLoader loader) {
+        if (translationLoaderCreator != null &&
+                version != null && !version.isEmpty() && !loader.getVersion().equals(version)) {
+            TranslationLoader other;
+
+            try {
+                other = translationLoaderCreator.createLoader(loader.getLocale());
+            } catch (IOException e) {
+                throw new RuntimeException("Could not get the merger (" + loader.getLocale() + ")", e);
+            }
+
+            if (other != null && other.isLoaded()) {
+                loader.merge(other);
+                loader.setVersion(other.getVersion());
+
+                try {
+                    loader.save();
+                } catch (IOException e) {
+                    throw new RuntimeException("Could not save the loader", e);
+                }
+            }
+        }
+
+        loader.register(registry);
+        loadedLocales.add(loader.getLocale());
     }
 }
