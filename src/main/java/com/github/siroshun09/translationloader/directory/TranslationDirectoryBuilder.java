@@ -2,6 +2,7 @@ package com.github.siroshun09.translationloader.directory;
 
 import com.github.siroshun09.translationloader.merger.MessageMerger;
 import com.github.siroshun09.translationloader.util.PathConsumer;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.TranslationRegistry;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -49,6 +50,17 @@ public final class TranslationDirectoryBuilder {
     }
 
     /**
+     * Sets the {@link Key} to create {@link TranslationRegistry}.
+     *
+     * @param key the {@link Key} to create {@link TranslationRegistry}
+     * @return this builder
+     */
+    @Contract("_ -> this")
+    public @NotNull TranslationDirectoryBuilder setKey(@NotNull Key key) {
+        return setRegistrySupplier(() -> TranslationRegistry.create(key));
+    }
+
+    /**
      * Sets the {@link PathConsumer} that is called when the directory is created.
      *
      * @param onDirectoryCreated the {@link PathConsumer} that is called when the directory is created
@@ -92,7 +104,7 @@ public final class TranslationDirectoryBuilder {
      *
      * @return a new {@link TranslationDirectory}
      * @throws NullPointerException the directory is not set by {@link #setDirectory(Path)}
-     * @throws NullPointerException the registry supplier is not set by {@link #setRegistrySupplier(Supplier)}
+     * @throws NullPointerException the registry supplier is not set by {@link #setRegistrySupplier(Supplier)} or {@link #setKey(Key)}
      */
     @Contract(value = "-> new", pure = true)
     public @NotNull TranslationDirectory build() {
