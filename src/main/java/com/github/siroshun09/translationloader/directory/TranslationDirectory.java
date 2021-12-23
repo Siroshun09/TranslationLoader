@@ -86,9 +86,22 @@ public class TranslationDirectory {
     /**
      * Loads message files from directory.
      * <p>
-     * If the directory does not exist, this method will create it.
+     * The process when loading is as follows:
+     * <ol>
+     *     <li>If the {@link TranslationRegistry} already created, call {@link #unload()} to reset it</li>
+     *     <li>If the directory does not exist, create it and call {@link #onDirectoryCreated}</li>
+     *     <li>Get the files in the directory and load them (supports .yml, .yaml, and .properties)</li>
+     *     <li>Update and register loader's messages that {@link TranslationLoader#isLoaded} returns true</li>
+     * </ol>
      * <p>
-     * This method may also use {@link TranslationLoaderCreator} to add messages and save them to a file.
+     * Requirements for updating messages (adding missing messages):
+     * <ul>
+     *     <li>Set the {@link TranslationLoaderCreator} by {@link TranslationDirectoryBuilder#setTranslationLoaderCreator(TranslationLoaderCreator)}</li>
+     *     <li>Set the version by {@link TranslationDirectoryBuilder#setVersion(String)}</li>
+     *     <li>The version is not an empty string</li>
+     *     <li>The version is different from {@link TranslationLoader#getVersion} or ends with {@code -SNAPSHOT}</li>
+     *     <li>{@link TranslationLoaderCreator#createLoader(Locale)} returns loaded {@link TranslationLoader}</li>
+     * </ul>
      *
      * @throws IOException if I/O error occurred
      */
@@ -202,8 +215,7 @@ public class TranslationDirectory {
     }
 
     private void updateAndRegister(@NotNull TranslationLoader loader) {
-        if (translationLoaderCreator != null &&
-                version != null && !version.isEmpty() &&
+        if (translationLoaderCreator != null && version != null && !version.isEmpty() &&
                 (version.endsWith("-SNAPSHOT") || !loader.getVersion().equals(version))) {
             TranslationLoader other;
 
