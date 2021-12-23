@@ -26,7 +26,6 @@ public final class TranslationDirectoryBuilder {
     private String version;
     private TranslationLoaderCreator translationLoaderCreator;
 
-
     TranslationDirectoryBuilder() {
     }
 
@@ -130,10 +129,14 @@ public final class TranslationDirectoryBuilder {
 
         if (registrySupplier == null) {
             Objects.requireNonNull(key);
-            Objects.requireNonNull(defaultLocale);
+
             registrySupplier = () -> {
                 var registry = TranslationRegistry.create(key);
-                registry.defaultLocale(defaultLocale);
+
+                if (defaultLocale != null) {
+                    registry.defaultLocale(defaultLocale);
+                }
+
                 return registry;
             };
         }
