@@ -194,7 +194,8 @@ public class TranslationDirectory {
 
     private void updateAndRegister(@NotNull TranslationLoader loader) {
         if (translationLoaderCreator != null &&
-                version != null && !version.isEmpty() && !loader.getVersion().equals(version)) {
+                version != null && !version.isEmpty() &&
+                (version.endsWith("-SNAPSHOT") || !loader.getVersion().equals(version))) {
             TranslationLoader other;
 
             try {
