@@ -131,6 +131,15 @@ public class TranslationDirectory {
     }
 
     /**
+     * Gets the version that this {@link TranslationDirectory} expected to {@link TranslationLoader}.
+     *
+     * @return the version or an empty string if the version is not set
+     */
+    public @NotNull String getVersion() {
+        return Objects.requireNonNullElse(version, "");
+    }
+
+    /**
      * Gets the {@link TranslationRegistry} to register messages
      *
      * @return the {@link TranslationRegistry}
