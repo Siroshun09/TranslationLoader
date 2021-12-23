@@ -75,13 +75,13 @@
         <dependency>
             <groupId>com.github.siroshun09.configapi</groupId>
             <artifactId>configapi</artifactId>
-            <version>4.5.0</version>
+            <version>4.6.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.siroshun09.configapi</groupId>
             <artifactId>configapi-yaml</artifactId>
-            <version>4.5.0</version>
+            <version>4.6.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
