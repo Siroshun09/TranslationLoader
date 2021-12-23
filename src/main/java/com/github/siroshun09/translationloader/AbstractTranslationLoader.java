@@ -66,7 +66,11 @@ public abstract class AbstractTranslationLoader implements TranslationLoader {
 
     @Override
     public void setVersion(@NotNull String version) {
-        this.version = Objects.requireNonNull(version);
+        Objects.requireNonNull(version);
+        if (!this.version.equals(version)) {
+            this.version = version;
+            setModified(true);
+        }
     }
 
     @Override
