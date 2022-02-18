@@ -2,6 +2,8 @@ plugins {
     `java-library`
     `maven-publish`
     signing
+
+    id("io.freefair.aggregate-javadoc") version "6.4.1"
 }
 
 subprojects {
@@ -13,6 +15,9 @@ subprojects {
     }
 }
 
+val adventureVersion = "4.9.3"
+val annotationsVersion = "23.0.0"
+
 allprojects {
     val javaVersion = JavaVersion.VERSION_11
 
@@ -21,8 +26,8 @@ allprojects {
     }
 
     dependencies {
-        compileOnly("org.jetbrains:annotations:23.0.0")
-        compileOnly("net.kyori:adventure-api:4.9.3")
+        compileOnly("net.kyori", "adventure-api", adventureVersion)
+        compileOnly("org.jetbrains", "annotations", annotationsVersion)
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
         testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
     }
@@ -102,13 +107,23 @@ allprojects {
 
             opts.encoding = Charsets.UTF_8.name()
             opts.links(
-                "https://jd.adventure.kyori.net/api/4.9.3/",
-                "https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/",
+                "https://docs.oracle.com/en/java/javase/${javaVersion.ordinal + 1}/docs/api/",
+                "https://jd.adventure.kyori.net/api/$adventureVersion/",
+                "https://javadoc.io/doc/org.jetbrains/annotations/$annotationsVersion/",
             )
         }
 
         test {
             useJUnitPlatform()
         }
+    }
+}
+
+tasks {
+    aggregateJavadoc {
+        val opts = options as StandardJavadocDocletOptions
+
+        opts.docTitle("TranslationLoader $version")
+        opts.encoding = Charsets.UTF_8.name()
     }
 }
